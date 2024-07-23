@@ -1,0 +1,5 @@
+files:
+  - base.yml
+  - commands
+  - jobs
+  - workflows

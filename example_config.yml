@@ -1,0 +1,66 @@
+version: 2.1
+
+setup: true
+
+orbs:
+  node: circleci/node@20
+
+references:
+  contexts:
+    test: &test_context test_context
+  default_message: &default_message "Hello, this is the default message"
+  test_stage: &test_stage test
+  test_env: &test_env test
+
+commands:
+  print_message:
+    parameters:
+      message:
+        type: string
+        default: *default_message
+        description: Message to echo out to console
+    environment:
+      MESSAGE: << parameters.message >>
+    steps:
+      - run:
+          name: test command
+          command: echo $MESSAGE
+  print_pwd:
+    steps:
+      - run:
+          name: test pwd command
+          command: echo $(pwd)
+
+jobs:
+  test:
+    parameters:
+      message:
+        type: string
+        default: *default_message
+        description: Message to print to console
+      stage:
+        type: string
+        default: *test_stage
+      env:
+        type: string
+        default: *test_env
+    environment:
+      STAGE: << parameters.stage >>
+      ENVIRONMENT: << parameters.env >>
+    steps:
+      - print_pwd
+      - print_message:
+          message: << parameters.message >>
+      - run:
+          name: Print stage
+          command: echo $STAGE
+      - run:
+          name: Print env
+          command: echo $ENVIRONMENT
+
+workflows
+  test:
+    context: *test_context
+    jobs:
+      - test:
+          message: *default_message
